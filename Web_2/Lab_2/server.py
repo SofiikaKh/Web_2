@@ -3,6 +3,7 @@ import threading
 import time
 from threading import Timer
 import datetime
+import xml
 
 host = 'localhost'
 port = 777
@@ -26,8 +27,12 @@ def timeout():
     printing(listClients)
 
 t = Timer(10, timeout)
-def message(listClients):
-    print("15")
+def sending(listClients):
+    for i in range (len(listClients)):
+        ur_sk = listconnections[i]
+        x = XML.dumps(listClients) 
+        ur_sk.send(x.encode("utf-8"))
+        i =i+1
 
 while True: 
     print('wait connection...')
@@ -43,13 +48,11 @@ while True:
             t.start()
         print(i,bytes.decode(data), "connected")
         tnow=datetime.datetime.now()
-        listClients.append([tnow.strftime("%d-%m-%Y %H:%M"),i,data])
-        
-    if (i==16):
-        break
+        listClients.append([tnow.strftime("%d-%m-%Y %H:%M"),i,data])    
+ 
 else: 
     for conn in listconnections:
-        conn.sendall(b'Hello from server!')
+        sending(listClients)
     for conn in listconnections:
         conn.close
     print("The end")
