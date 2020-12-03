@@ -47,7 +47,7 @@ def xmlcreate(listClients):
         doc = '<?xml version="1.0" encoding="UTF-8"?>' + message.decode("utf-8")
         print (doc)
     return doc
-def listconnections_write(requests, w_clients, all_clients):
+def listconnections_write(requests, w_clients, all_clients,listClients):
     for tcp_socket in w_clients:
         if tcp_socket in requests:
             try:
@@ -56,12 +56,11 @@ def listconnections_write(requests, w_clients, all_clients):
             except:
                 print("client{}{}disconnected".format(tcp_socket.fileno(),tcp_socket.getpeername()))  
                 tcp_socket.close()
-    return response
 def timeout():
     now = datetime.datetime.now()
     print ("timestartat:  ",now.strftime("%d-%m-%Y %H:%M"))
-    if  requests:
-        listconnections_write(requests,w,listconnections)
+    listconnections_write(requests,w,listconnections,listClients)
+    print ("xmll,",xmlcreate(listClients))
 t = Timer(10, timeout)
 while i<16: 
     print('wait connection...')
@@ -69,7 +68,7 @@ while i<16:
     data = conn.recv(1024)
     listconnections.append(conn)
     if not data:
-        break
+        continue
     else:
         i=i+1
         if (i==1):
@@ -77,16 +76,12 @@ while i<16:
         print(i,bytes.decode(data), "connected")
         tnow=datetime.datetime.now()
         listClients.append([tnow.strftime("%d-%m-%Y %H:%M"),i,data])      
-      
         try:
             r,w,e = select.select(listconnections,listconnections,[],wait)  
         except: 
             pass
-        requests = listconnections_read(r,listconnections)
-       
+        requests = listconnections_read(r,listconnections)   
 else: 
     print("The end")
 
-
-print ("xmll,",xmlcreate(listClients))
 
